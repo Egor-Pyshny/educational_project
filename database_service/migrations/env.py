@@ -1,13 +1,24 @@
+import os
 from logging.config import fileConfig
 
+from alembic import context
+from alembic_utils.replaceable_entity import register_entities
+from dotenv import load_dotenv
+from models import Base
+from models import author_book_models
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
-from alembic import context
-
+load_dotenv()
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
+section = config.config_ini_section
+config.set_section_option(
+    section,
+    "DB_URL",
+    os.getenv("DB_URL", "driver://user:pass@localhost/dbname"),
+)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
@@ -18,7 +29,16 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = None
+target_metadata = Base.metadata
+
+# add Replaceable Objects(views, functions etc.) here
+register_entities(
+    [
+        author_book_models.catalogue_view,
+        author_book_models.before_insert_book_check,
+        author_book_models.book_author_association_before_insert_trigger,
+    ]
+)
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

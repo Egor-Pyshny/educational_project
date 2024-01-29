@@ -16,6 +16,6 @@ def remove_product():
 @service.route("/shop/api/v1/catalog/list")
 def list_product():
     return "<p>list</p>"
+# TODO: сделать id для сообщений на подтверждение с prefetch_count=1
 
-
-service.run(host='192.168.0.104', port=5000)
+service.run(host="192.168.0.104", port=5000)
