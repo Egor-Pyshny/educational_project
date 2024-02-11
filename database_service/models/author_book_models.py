@@ -55,7 +55,6 @@ class Authors(Base):
         "Books",
         secondary=book_author_association,
         back_populates="book_authors",
-        cascade="all, delete-orphan",
     )
 
 
@@ -91,7 +90,7 @@ before_insert_book_check = PGFunction(
     definition="""
     RETURNS TRIGGER AS $$
     BEGIN
-        IF NOT EXISTS (SELECT 1 FROM book_author_association WHERE author_id = NEW.author_id) THEN
+        IF NOT EXISTS (SELECT 1 FROM authors WHERE author_id = NEW.author_id) THEN
             RAISE EXCEPTION 'Несуществующий ID автора --> %', NEW.author_id USING HINT = 'Проверьте ваш ID автора';
         END IF;
         RETURN NEW;
@@ -116,9 +115,9 @@ catalogue_view = PGMaterializedView(
 book_author_association_before_insert_trigger = PGTrigger(
     schema="public",
     signature="check_authors_trigger",
-    on_entity="public.book_author_association",
+    on_entity="public.books",
     definition="""
-    BEFORE INSERT ON public.book_author_association
+    BEFORE INSERT ON public.books
     FOR EACH ROW EXECUTE FUNCTION before_insert_book_check()
     """,
 )

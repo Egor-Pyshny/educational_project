@@ -35,8 +35,6 @@ target_metadata = Base.metadata
 register_entities(
     [
         author_book_models.catalogue_view,
-        author_book_models.before_insert_book_check,
-        author_book_models.book_author_association_before_insert_trigger,
     ]
 )
 
