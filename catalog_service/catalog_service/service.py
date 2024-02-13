@@ -19,7 +19,7 @@ def add_request_id():
 
 def callback(ch, method, properties, body):
     print("ret" + str(properties.correlation_id))
-    answers[properties.correlation_id] = json.loads(body)["data"]
+    answers[properties.correlation_id] = json.loads(body.decode())
 
 
 async def get_response(request_id):

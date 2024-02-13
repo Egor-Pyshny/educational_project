@@ -32,7 +32,7 @@ class Controller:
         # res = handler(message.body)
         message_body = "work"
         answer = aio_pika.Message(body=message_body.encode())
-        answer.properties.correlation_id = message.correlation_id
+        answer.correlation_id = message.correlation_id
         await self.channel.default_exchange.publish(
             answer,
             routing_key=message.reply_to
