@@ -8,8 +8,8 @@ from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 
-from database_service.core import items_per_page
 from models.author_book_models import Books, Authors
+from models.maSchemas import BooksSchema
 from utils.LoggerFormater import CustomFormatter
 
 
@@ -41,44 +41,47 @@ class Core:
         )
         self.db_logger.info("connection pool ready")
 
-    async def catalog_add_func(self, ch, method, props, body) -> None:
+    async def catalog_add_func(self, body) -> str:
         try:
             async with self.custom_session() as my_session:
                 async with my_session.begin():
                     data = json.loads(body.decode())["data"]
-                    authors_list = []
-                    for author in data["authors"]:
-                        authors_list.append(Authors(
-                            authr_name=author["name"],
-                            author_surname=author["surname"]
-                        ))
-                    new_book = Books(
-                        book_title=data["title"],
-                        book_amount=data["amount"],
-                        book_description=data["description"],
-                        book_price=data["price"],
-                    )
-                    new_book.book_authors.append(authors_list)
+                    new_book = BooksSchema.load(data)
+                    # authors_list = []
+                    # for author in data["authors"]:
+                    #     authors_list.append(Authors(
+                    #         authr_name=author["name"],
+                    #         author_surname=author["surname"]
+                    #     ))
+                    # new_book = Books(
+                    #     book_title=data["title"],
+                    #     book_amount=data["amount"],
+                    #     book_description=data["description"],
+                    #     book_price=data["price"],
+                    # )
+                    # new_book.book_authors.append(authors_list)
                     await my_session.add(new_book)
-        except NoResultFound:
+                    return json.dumps({"res":"added","exception":""})
+        except NoResultFound as e:
             print(f"Книга с названием не найдена.")
 
-    async def catalog_remove_func(self, ch, method, props, body) -> None:
+    async def catalog_remove_func(self, body) -> str:
         try:
             async with self.custom_session() as my_session:
                 async with my_session.begin():
                     data = json.loads(body.decode())["data"]
                     stmt = delete(Books).where(Books.title == data["title"])
                     await my_session.execute(stmt)
-        except NoResultFound:
+                    return json.dumps({"res": "deleted", "exception": ""})
+        except NoResultFound as e:
             print(f"Книга с названием не найдена.")
 
-    async def catalog_list_func(self, ch, method, props, body):
+    async def catalog_list_func(self, body):
         try:
             async with self.custom_session() as my_session:
                 async with my_session.begin():
                     data = json.loads(body.decode())["data"]
-                    stmt = select(Books).offset(int(data["page"])*items_per_page).limit(items_per_page).order_by(desc(Books.book_title))
+                    stmt = select(Books).offset(int(data["page"])*20).limit(20).order_by(desc(Books.book_title))
                     books = my_session.execute(stmt)
         except NoResultFound:
             print(f"Книга с названием не найдена.")
