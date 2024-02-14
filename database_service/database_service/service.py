@@ -10,7 +10,6 @@ catalog_tasks = set()
 
 
 async def catalog_proxy(message: AbstractIncomingMessage):
-    print("Received message:", message.body.decode())
     task = asyncio.create_task(controller.execute(message))
     catalog_tasks.add(task)
     task.add_done_callback(catalog_tasks.discard)

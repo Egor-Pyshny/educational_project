@@ -19,14 +19,14 @@ def add_request_id():
 
 def callback(ch, method, properties, body):
     print("ret" + str(properties.correlation_id))
-    answers[properties.correlation_id] = json.loads(body.decode())
+    answers[properties.correlation_id] = "json.loads(body.decode())"
+    print(answers.keys())
 
 
-async def get_response(request_id):
+def get_response(request_id):
     while True:
-        if request_id in answers:
-            return answers[request_id]
-
+        if request_id in answers.keys():
+            return answers.pop(request_id)
 
 @service.route("/shop/api/v1/catalog/add")
 async def add_product():
@@ -42,7 +42,7 @@ async def add_product():
         ),
         body=json.dumps(data)
     )
-    return await get_response(request.request_id)
+    return get_response(request.request_id)
 
 
 @service.route("/shop/api/v1/catalog/remove")
@@ -77,7 +77,6 @@ async def list_product():
     )
     return await get_response(request.request_id)
     return "<p>list</p>"
-# TODO: сделать id для сообщений на подтверждение с prefetch_count=1
 
 
 def start():

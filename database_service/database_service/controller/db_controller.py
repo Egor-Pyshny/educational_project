@@ -26,18 +26,18 @@ class Controller:
 
     @error_handler
     async def execute(self, message: AbstractIncomingMessage):
-        print("2")
         command = json.loads(message.body.decode())["method"]
         handler = self.commands[command]
         # res = handler(message.body)
         message_body = "work"
         answer = aio_pika.Message(body=message_body.encode())
         answer.correlation_id = message.correlation_id
+        print("Received message:", message.body.decode())
         await self.channel.default_exchange.publish(
             answer,
-            routing_key=message.reply_to
+            routing_key="catalog_callback"
         )
-        # await message.ack()
+        await message.ack()
         # channel.basic_publish(
         #     exchange='',
         #     routing_key=props.reply_to,
