@@ -103,7 +103,7 @@ catalogue_view = PGMaterializedView(
     schema="public",
     signature="catalogue_book_materializedview",
     definition="""
-    SELECT b.book_id, b.book_title, b.book_price, STRING_AGG(a.author_name, ', ') AS authors
+    SELECT b.book_id, b.book_title, b.book_price, STRING_AGG(a.author_surname, ', ') AS authors
     FROM books b
     JOIN book_author_association ba ON b.book_id = ba.book_id
     JOIN authors a ON ba.author_id = a.author_id

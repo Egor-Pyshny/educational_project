@@ -1,5 +1,6 @@
 from marshmallow import fields
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
+from sqlalchemy.orm import Session
 
 from models.author_book_models import Authors, Books
 
@@ -15,4 +16,5 @@ class BooksSchema(SQLAlchemyAutoSchema):
 
     class Meta:
         model = Books
-        load_instance = True
+
+

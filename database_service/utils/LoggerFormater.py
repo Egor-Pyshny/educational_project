@@ -16,8 +16,8 @@ class CustomFormatter(logging.Formatter):
             logging.DEBUG: self.blue + self.fmt + self.reset,
             logging.INFO: self.white + self.fmt + self.reset,
             logging.WARNING: self.yellow + self.fmt + self.reset,
-            logging.ERROR: self.red + self.fmt + self.reset,
-            logging.CRITICAL: self.bold_red + self.fmt + self.reset
+            logging.ERROR: self.bold_red + self.fmt + self.reset,
+            logging.CRITICAL: self.red + self.fmt + self.reset
         }
 
     def format(self, record):
