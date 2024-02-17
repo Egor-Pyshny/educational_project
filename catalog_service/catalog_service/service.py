@@ -35,7 +35,7 @@ def get_response(request_id):
             return answers.pop(request_id)
 
 
-@service.route("/shop/api/v1/catalog/add")
+@service.route("/shop/api/v1/catalog/add", methods=['PUT'])
 async def add_product():
     data = json.loads(request.data)
     data["method"] = "catalog_add"
@@ -51,7 +51,7 @@ async def add_product():
     return get_response(request.request_id)
 
 
-@service.route("/shop/api/v1/catalog/book/<id>")
+@service.route("/shop/api/v1/catalog/book/<id>", methods=['GET'])
 async def book_info(id):
     data = {"data":{"book_id":str(id)},"method":"book_info"}
     channel.basic_publish(
@@ -66,7 +66,7 @@ async def book_info(id):
     return get_response(request.request_id)
 
 
-@service.route("/shop/api/v1/catalog/remove")
+@service.route("/shop/api/v1/catalog/remove", methods=['DELETE'])
 async def remove_product():
     data = json.loads(request.data)
     data["method"] = "catalog_remove"
@@ -82,7 +82,7 @@ async def remove_product():
     return get_response(request.request_id)
 
 
-@service.route("/shop/api/v1/catalog/list")
+@service.route("/shop/api/v1/catalog/list", methods=['GET'])
 async def list_product():
     data = json.loads(request.data)
     data["method"] = "catalog_list"

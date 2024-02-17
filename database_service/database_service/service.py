@@ -21,7 +21,6 @@ async def catalog_handler():
     channel = await connection.channel()
     queue = await channel.declare_queue("catalog_queue")
     await controller.connect()
-    # await queue.consume(catalog_proxy)
     async for message in queue:
         asyncio.create_task(catalog_proxy(message))
 
