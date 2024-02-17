@@ -2,14 +2,15 @@ import asyncio
 import json
 
 import logging
+import uuid
 from typing import Dict
 
-from sqlalchemy import select, delete, desc, Table, func
+from sqlalchemy import select, delete, desc, Table, func, text
 from sqlalchemy.schema import MetaData
 from sqlalchemy import AsyncAdaptedQueuePool
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, Session
 
 from models.author_book_models import Books, Authors, book_author_association
 from utils.LoggerFormater import CustomFormatter
@@ -41,7 +42,6 @@ class Core:
         self.db_error_logger.addHandler(stdout_handler)
 
     async def catalog_add_func(self, body) -> Dict[str, str]:
-        self.db_error_logger.error("test")
         try:
             async with self.custom_session() as my_session:
                 async with my_session.begin():
@@ -61,6 +61,7 @@ class Core:
                             )
                         authors_list.append(author)
                     new_book = Books(
+                        book_id=uuid.uuid4(),
                         book_title=data["book_title"],
                         book_amount=data["book_amount"],
                         book_description=data["book_description"],
@@ -68,6 +69,7 @@ class Core:
                         book_authors=authors_list
                     )
                     my_session.add(new_book)
+                    await my_session.execute(text("REFRESH MATERIALIZED VIEW catalogue_book_materializedview;"))
                     return json.dumps({"res":"completed","exception":""})
         except IntegrityError as e:
             self.db_error_logger.error(e.args[0])
@@ -80,7 +82,8 @@ class Core:
                 stmt = delete(Books).where(Books.book_title == data["book_title"])
                 self.db_logger.info(stmt)
                 res = await my_session.execute(stmt)
-                # res.rowcount = 0 таких книг нет
+                if res.rowcount > 0:
+                    await my_session.execute(text("REFRESH MATERIALIZED VIEW catalogue_book_materializedview;"))
                 return json.dumps({"res": "completed", "exception": ""})
 
     async def book_info_func(self, body) -> Dict[str, str]:
@@ -132,26 +135,26 @@ class Core:
                 return json.dumps({"res": "exception", "exception": f"no such column as {e.args[0]}, possible columns: {MaterializedView.c}"})
 
 
-c = Core()
-b = """{"data":{
-        "book_title":"1",
-        "book_amount":1,
-        "book_id":"893ce751-fea0-427c-a5c9-f99cce6a15d5",
-        "book_description":"description",
-        "book_price": 1.0,
-        "fiter_field":"book_thgitle",
-        "filter_direction":"ASC",
-        "page":0,
-        "book_authors":[
-            {
-                "author_name":"a3",
-                "author_surname":"s3"
-            },
-            {
-                "author_name":"a5",
-                "author_surname":"s5"
-            }
-        ]
-    }}"""
-asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-asyncio.run(c.catalog_list_func(b))
+# c = Core()
+# b = """{"data":{
+#         "book_title":"4",
+#         "book_amount":1,
+#         "book_id":"893ce751-fea0-427c-a5c9-f99cce6a15d5",
+#         "book_description":"description",
+#         "book_price": 1.0,
+#         "fiter_field":"book_thgitle",
+#         "filter_direction":"ASC",
+#         "page":0,
+#         "book_authors":[
+#             {
+#                 "author_name":"a3",
+#                 "author_surname":"s3"
+#             },
+#             {
+#                 "author_name":"a5",
+#                 "author_surname":"s5"
+#             }
+#         ]
+#     }}"""
+# asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+# asyncio.run(c.catalog_remove_func(b))

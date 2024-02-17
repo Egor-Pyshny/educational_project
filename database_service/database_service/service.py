@@ -1,7 +1,8 @@
 import asyncio
+from asyncio import WindowsSelectorEventLoopPolicy
 
 import aio_pika
-from aio_pika.abc import AbstractRobustQueue, AbstractIncomingMessage
+from aio_pika.abc import AbstractIncomingMessage
 
 from database_service import thread_pool_executor
 from database_service.controller.db_controller import Controller
@@ -37,5 +38,6 @@ def start_service():
 
 
 controller = Controller()
+asyncio.set_event_loop_policy(WindowsSelectorEventLoopPolicy())
 asyncio.run(catalog_handler())
 # start_service()

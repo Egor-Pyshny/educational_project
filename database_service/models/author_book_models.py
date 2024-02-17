@@ -107,7 +107,7 @@ catalogue_view = PGMaterializedView(
     FROM books b
     JOIN book_author_association ba ON b.book_id = ba.book_id
     JOIN authors a ON ba.author_id = a.author_id
-    GROUP BY b.book_id, b.book_title, b.book_amount;
+    GROUP BY b.book_id;
     """,
     with_data=True
 )

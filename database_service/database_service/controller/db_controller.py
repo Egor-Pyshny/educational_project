@@ -21,7 +21,7 @@ class Controller:
         self.connection = None
         self.channel = None
         self.info_logger = logging.getLogger("DBController")
-        self.error_logger = logging.getLogger("DBController error")
+        self.error_logger = logging.getLogger("DBController_error")
         fmt = "%(asctime)s %(levelname)s %(name)s: %(message)s"
         stdout_handler = logging.StreamHandler()
         stdout_handler.setLevel(logging.DEBUG)
@@ -37,12 +37,12 @@ class Controller:
 
     async def execute(self, message: AbstractIncomingMessage):
         try:
+            self.info_logger.info(f"Received message: {message.body.decode()}")
             command = json.loads(message.body.decode())["method"]
             handler = self.commands[command]
-            res = handler(message.body.decode())
+            res = await handler(message.body.decode())
             answer = aio_pika.Message(body=res.encode())
             answer.correlation_id = message.correlation_id
-            self.info_logger.info(f"Received message: {message.body.decode()}")
             await self.channel.default_exchange.publish(
                 answer,
                 routing_key="catalog_callback"
