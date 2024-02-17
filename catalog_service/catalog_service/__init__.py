@@ -1,4 +1,8 @@
+import logging
+
 import pika
+
+from utils.LoggerFormater import CustomFormatter
 
 connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost', port=5672))
 channel = connection.channel()

@@ -16,6 +16,7 @@ class Controller:
             "catalog_add": self.core.catalog_add_func,
             "catalog_remove": self.core.catalog_remove_func,
             "catalog_list": self.core.catalog_list_func,
+            "book_info": self.core.book_info_func,
         }
         self.connection = None
         self.channel = None
@@ -41,7 +42,6 @@ class Controller:
             res = handler(message.body.decode())
             answer = aio_pika.Message(body=res.encode())
             answer.correlation_id = message.correlation_id
-            print("Received message:", message.body.decode())
             self.info_logger.info(f"Received message: {message.body.decode()}")
             await self.channel.default_exchange.publish(
                 answer,

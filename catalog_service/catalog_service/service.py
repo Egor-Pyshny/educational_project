@@ -18,9 +18,7 @@ def add_request_id():
 
 
 def callback(ch, method, properties, body):
-    print("ret" + str(properties.correlation_id))
     answers[properties.correlation_id] = "json.loads(body.decode())"
-    print(answers.keys())
 
 
 def get_response(request_id):
@@ -28,11 +26,26 @@ def get_response(request_id):
         if request_id in answers.keys():
             return answers.pop(request_id)
 
+
 @service.route("/shop/api/v1/catalog/add")
 async def add_product():
     data = json.loads(request.data)
     data["method"] = "catalog_add"
-    print(request.request_id)
+    channel.basic_publish(
+        exchange='',
+        routing_key='catalog_queue',
+        properties=BasicProperties(
+            reply_to=callback_queue,
+            correlation_id=request.request_id
+        ),
+        body=json.dumps(data)
+    )
+    return get_response(request.request_id)
+
+
+@service.route("/shop/api/v1/catalog/book/<id>")
+async def add_product():
+    data = {"data":{"id":str(id)},"method":"book_info"}
     channel.basic_publish(
         exchange='',
         routing_key='catalog_queue',

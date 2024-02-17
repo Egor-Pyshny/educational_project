@@ -12,7 +12,7 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 
 from models import Base
-from models.author_book_models import Books, Authors, catalogue_view
+from models.author_book_models import Books, Authors, book_author_association
 from utils.LoggerFormater import CustomFormatter
 
 
@@ -84,6 +84,15 @@ class Core:
                 res = await my_session.execute(stmt)
                 # res.rowcount = 0 таких книг нет
                 return json.dumps({"res": "completed", "exception": ""})
+
+    async def book_info_func(self, body) -> Dict[str, str]:
+        async with self.custom_session() as my_session:
+            async with my_session.begin():
+                data = json.loads(body)["data"]
+                stmt = select(Books).where(Books.book_id == data["id"])
+                book = await my_session.execute(stmt)
+                stmt = select(Authors).join(book_author_association, book_author_association.author_id)
+
 
     async def catalog_list_func(self, body) -> Dict[str, str]:
         try:
