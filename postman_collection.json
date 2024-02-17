@@ -1,0 +1,156 @@
+{
+	"info": {
+		"_postman_id": "5a02a235-00b6-417f-80a0-073b35b669be",
+		"name": "OnlineShop",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26822821"
+	},
+	"item": [
+		{
+			"name": "catalog",
+			"item": [
+				{
+					"name": "Add Book",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\":{\r\n        \"book_title\":\"3\",\r\n        \"book_amount\":0,\r\n        \"book_description\":\"description\",\r\n        \"book_price\": 1,\r\n        \"book_authors\":[\r\n            {\r\n                \"author_name\":\"a1\",\r\n                \"author_surname\":\"s1\"\r\n            },\r\n            {\r\n                \"author_name\":\"a2\",\r\n                \"author_surname\":\"s2\"\r\n            }\r\n        ]\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:5550/shop/api/v1/catalog/add",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5550",
+							"path": [
+								"shop",
+								"api",
+								"v1",
+								"catalog",
+								"add"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Page",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\":{\r\n        \"page_number\":1,\r\n        \"filter_field\":\"book_title\",\r\n        \"filter_direction\":\"desc\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:5550/shop/api/v1/catalog/list",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5550",
+							"path": [
+								"shop",
+								"api",
+								"v1",
+								"catalog",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Book",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\":{\r\n        \"book_title\":\"title2\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:5550/shop/api/v1/catalog/remove",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5550",
+							"path": [
+								"shop",
+								"api",
+								"v1",
+								"catalog",
+								"remove"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Book info",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:5550/shop/api/v1/catalog/book/893ce751-fea0-427c-a5c9-f99cce6a15d5?as=adasd",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5550",
+							"path": [
+								"shop",
+								"api",
+								"v1",
+								"catalog",
+								"book",
+								"893ce751-fea0-427c-a5c9-f99cce6a15d5"
+							],
+							"query": [
+								{
+									"key": "as",
+									"value": "adasd"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
